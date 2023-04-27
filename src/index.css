@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.gameBox{
+  width: 60vw;
+  height: 60vw;
+  max-width: 1024px;
+  max-height: 1024px;
+}
+
+
