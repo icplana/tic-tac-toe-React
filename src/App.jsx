@@ -22,14 +22,14 @@ let gameFinished = false
 
 
 const [useClick, setUseClick] = useState(true)
-let imgSrc = "./src/assets/images/o.svg"
+let imgSrc = "/src/assets/images/o.svg"
 
 const handleClick = ({target}) => {  
   if (gameFinished) return
   if(target.classList.contains('opacity-0')){
     target.classList.remove('opacity-0')
     useClick ? target.parentElement.setAttribute('data-id','o') : target.parentElement.setAttribute('data-id','x')
-    useClick ? imgSrc = "./src/assets/images/x.svg" : imgSrc = "./src/assets/images/o.svg"
+    useClick ? imgSrc = "/src/assets/images/x.svg" : imgSrc = "/src/assets/images/o.svg"
     const pendingImgs = [...document.querySelectorAll('.opacity-0')]
     pendingImgs.forEach( e => e.src = imgSrc)
     setUseClick(!useClick)
@@ -87,7 +87,7 @@ const onWinner = ( winner ) => {
 const handleReset = () => {
   const allImgs = [...document.querySelectorAll('img')]
   allImgs.forEach( e => e.classList.add('opacity-0'))
-  imgSrc = "./src/assets/images/o.svg"
+  imgSrc = "/src/assets/images/o.svg"
   allImgs.forEach( e => e.src = imgSrc)
 
   const allDivs = [...document.querySelectorAll('.bg-gray-400')]
