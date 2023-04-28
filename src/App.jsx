@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Square } from "./Componenets/Square"
 import { Modal } from "./Componenets/Modal"
 
@@ -8,69 +8,82 @@ import { Modal } from "./Componenets/Modal"
 export const App = () => {
 
   const [useClick, setUseClick] = useState(true)
+  const [gameMode, setGameMode] = useState()
+  const [gameFinished, setGameFinished] = useState( false )
 
   let imgSrc = "./assets/images/o.svg"
-  let gameFinished = false
-  const [playing2players, setPlaying2players] = useState(false)
+  
+  
 
+  
+  useEffect(() => {
   const modal = document.querySelector('#modal')
   const modalBg = document.querySelector('#modalBg')
   const modalText = document.querySelector('#modalText')
+  
+    return () => {
+      
+    }
+  }, [])
+  
 
 
-  const pos11 = document.querySelector('#pos0')
-  const pos12 = document.querySelector('#pos1')
-  const pos13 = document.querySelector('#pos2')
-  const pos21 = document.querySelector('#pos3')
-  const pos22 = document.querySelector('#pos4')
-  const pos23 = document.querySelector('#pos5')
-  const pos31 = document.querySelector('#pos6')
-  const pos32 = document.querySelector('#pos7')
-  const pos33 = document.querySelector('#pos8')
+  
 
 
   const onGameMode = ({ target:{ value } }) => {
-    if ( value === 'pvsc' ) setPlaying2players( false )
-    if ( value === 'pvsp' ) setPlaying2players( true )
+   setGameMode( value )
   } 
 
-  const handleClick = ({ target }) => {  
-    if (playing2players){
-      if (gameFinished) return
-      if(target.classList.contains('opacity-0')){
-        target.classList.remove('opacity-0')
-        useClick ? target.parentElement.setAttribute('data-id','o') : target.parentElement.setAttribute('data-id','x')
-        useClick ? imgSrc = "./assets/images/x.svg" : imgSrc = "./assets/images/o.svg"
-        const pendingImgs = [...document.querySelectorAll('.opacity-0')]
-        pendingImgs.forEach( e => e.src = imgSrc)
-        setUseClick(!useClick)
-        try{checkStatusArr()}catch{}    
-      }   
-    }
-    else{
-      if (gameFinished) return
-      if(target.classList.contains('opacity-0')){
-        target.classList.remove('opacity-0')
-        target.parentElement.setAttribute('data-id','o')
-        try{checkStatusArr()}catch{}
-
-        const pendingImgs = [...document.querySelectorAll('.opacity-0')]
-        if ( pendingImgs.length > 0 ){
-          const randomPos = Math.floor(Math.random()*pendingImgs.length)
-          pendingImgs[randomPos].setAttribute('src', "./assets/images/x.svg")
-          pendingImgs[randomPos].parentElement.setAttribute('data-id','x')        
-          setTimeout(() => {
-            pendingImgs[randomPos].classList.remove('opacity-0')
-            try{checkStatusArr()}catch{} 
-          }, 500); 
-        }
-        else{ checkStatusArr }
-      }
-        
+  const handleClick2P = ({ target }) => {
+    if(target.classList.contains('opacity-0')){
+      target.classList.remove('opacity-0')
+      useClick ? target.parentElement.setAttribute('data-id','o') : target.parentElement.setAttribute('data-id','x')
+      useClick ? imgSrc = "./assets/images/x.svg" : imgSrc = "./assets/images/o.svg"
+      const pendingImgs = [...document.querySelectorAll('.opacity-0')]
+      pendingImgs.forEach( e => e.src = imgSrc)
+      setUseClick(!useClick)
+      checkStatusArr()    
     }
   }
+
+const handleClickC = ({ target }) => {
+  if(target.classList.contains('opacity-0')){
+    target.classList.remove('opacity-0')
+    target.parentElement.setAttribute('data-id','o')
+    checkStatusArr()
+
+    const pendingImgs = [...document.querySelectorAll('.opacity-0')]
+    if ( pendingImgs.length > 0 ){
+      const randomPos = Math.floor(Math.random()*pendingImgs.length)
+      pendingImgs[randomPos].setAttribute('src', "./assets/images/x.svg")
+      pendingImgs[randomPos].parentElement.setAttribute('data-id','x')        
+      pendingImgs[randomPos].classList.remove('opacity-0')
+      checkStatusArr()
+      
+    }
+  }
+}
+  const handleClick = (e) => {
+    if ( gameMode === undefined ){ alert('Select a Game mode')}
+    else{ 
+      if (gameFinished) return
+      if ( gameMode === 'pvsc' ) handleClickC (e)
+      if ( gameMode === 'pvsp' ) handleClick2P (e)
+    }      
+}
+  
     
   const checkStatusArr = () => {
+    const pos11 = document.querySelector('#pos0')
+    const pos12 = document.querySelector('#pos1')
+    const pos13 = document.querySelector('#pos2')
+    const pos21 = document.querySelector('#pos3')
+    const pos22 = document.querySelector('#pos4')
+    const pos23 = document.querySelector('#pos5')
+    const pos31 = document.querySelector('#pos6')
+    const pos32 = document.querySelector('#pos7')
+    const pos33 = document.querySelector('#pos8')
     const data =[
       [pos11.getAttribute('data-id'), pos12.getAttribute('data-id'), pos13.getAttribute('data-id')],
       [pos21.getAttribute('data-id'), pos22.getAttribute('data-id'), pos23.getAttribute('data-id')],
@@ -81,8 +94,8 @@ export const App = () => {
       [pos11.getAttribute('data-id'), pos22.getAttribute('data-id'), pos33.getAttribute('data-id')],
       [pos31.getAttribute('data-id'), pos22.getAttribute('data-id'), pos13.getAttribute('data-id')]
     ]
+    let finished = false
     data.forEach( dataList => {
-      let finished = false
       if (dataList.filter(XorO => XorO === 'x').length === 3 ){
         onWinner( 'X won the game!' )
         return finished = true
@@ -104,7 +117,7 @@ export const App = () => {
     modal.classList.add('flex')
     modalBg.classList.remove('hidden')
     modalText.innerHTML = `${ winner }`
-    gameFinished = true
+    setGameFinished( true )
   
   }
     
@@ -117,7 +130,7 @@ export const App = () => {
     const allDivs = [...document.querySelectorAll('.bg-gray-400')]
     allDivs.forEach ( e => e.setAttribute( 'data-id', 'none' ))
     setUseClick(true)
-    gameFinished = false
+    setGameFinished( false )
   }
     
   const onRematch = ()=> {
